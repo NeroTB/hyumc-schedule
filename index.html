@@ -4,6 +4,8 @@
 <head>
   <style>
     body {
+      display: flex;
+      justify-content: center;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
@@ -11,7 +13,48 @@
       flex-direction: column;
       align-items: center;
       height: 100vh;
-      background-color: #f0f0f0;
+      background-color: #2b2b2b;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      height: 20vh;
+      width: 100vw;
+      top: 0;
+    }
+
+    main {
+
+      /* align-items: center; */
+      position: absolute;
+      width: 100vw;
+      height: 67vh;
+      overflow: auto;
+      top: 23vh;
+      /* display: flex; */
+      /* justify-content: center; */
+    }
+
+    main::-webkit-scrollbar {
+      background-color: #2b2b2b;
+      width: 5px;
+      height: 5px;
+    }
+
+    main::-webkit-scrollbar-thumb {
+      background-color: #6b6b6b;
+      border-radius: 10px;
+    }
+
+    footer {
+      display: flex;
+      flex-direction: row-reverse;
+      position: absolute;
+      bottom: 0;
+      width: 100vw;
     }
 
     #fileUpload {
@@ -23,11 +66,15 @@
     }
 
     #fileUpload label {
-      padding: 10px 20px;
+      padding: 10px 50px;
       background-color: #4CAF50;
       color: white;
       cursor: pointer;
       border-radius: 5px;
+    }
+
+    #fileUpload label:hover {
+      background-color: #3c883f;
     }
 
     #output {
@@ -38,7 +85,8 @@
     }
 
     button {
-      margin-left: 10px;
+      /* margin-left: 10px; */
+      margin: 5px;
       padding: 10px 20px;
       font-size: 16px;
       color: #fff;
@@ -54,67 +102,147 @@
 
     #sheetMenu {
       display: none;
-      margin-top: 20px;
+      width: 90%;
+      overflow-x: auto;
+      margin-top: 10px;
+      white-space: nowrap;
+      margin: auto;
+    }
+
+    #sheetMenu::-webkit-scrollbar {
+      background-color: #2b2b2b;
+      width: 5px;
+      height: 5px;
+    }
+
+    #sheetMenu::-webkit-scrollbar-thumb {
+      background-color: #6b6b6b;
+      border-radius: 10px;
+    }
+
+    #sheetMenu button {
+      font-size: 80%;
+      white-space: nowrap;
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
+
+    }
+
+    tr {
+      background-color: #474747;
+
     }
 
     th,
     td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      border: 1px solid black;
+      padding: 6px;
+      color: white;
+      font-size: 12px;
     }
 
-    tr:nth-child(even) {
+    /* tr:nth-child(even) {
       background-color: #f2f2f2;
-    }
+    } */
 
     th {
       background-color: #4CAF50;
       color: white;
     }
 
-    #workMonth {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
+    input[type='month'] {
+      border: none;
+      position: relative;
+      width: 80vw;
+      padding: 10px;
+      /* background: url(../../../assets/Calendar.svg) no-repeat right 10px center / 35px auto; */
+      background-color: #bbbbbb;
+      box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 150%;
+      margin-top: 5px;
+      /* margin-bottom: 20px; */
     }
 
-    #selectedFile {
+
+    input[type='month']::-webkit-calendar-picker-indicator {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+    }
+
+    input[type='month']::before {
+      content: attr(placeholder);
+      /* width: 100%;
+      height: 100%; */
+    }
+
+
+    input[type='month']:valid::before {
+      display: none;
+    }
+/* 
+    #workMonth {
       margin-top: 10px;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: bold;
-      color: #007BFF;
+      background-color: black;
+      color: white;
+      border: none;
+      box-shadow: none;
+    } */
+
+    #selectedFile {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #19ff00;
     }
   </style>
 </head>
 
 <body>
-  <div id="fileUpload">
-    <input type="file" id="excelFile" onchange="updateFileName()" />
-    <label for="excelFile">파일 선택</label>
-    <button onclick="handleFile()">Upload</button>
-  </div>
-  <div id="selectedFile"></div>
-  <div id="sheetMenu"></div>
-  <div id="workMonth"></div>
-  <div id="output"></div>
+  <header>
+    <div id="fileUpload">
+      <input type="file" id="excelFile" onchange="updateFileName()" />
+      <label for="excelFile">파일 선택</label>
+      <!-- <button onclick="handleFile()">Upload</button> -->
+    </div>
+    <div id="selectedFile"></div>
+    <div id="sheetMenu">
+      <div id="sheetButton" style="display: flex; justify-content: center;"></div>
+    </div>
+    <input type='month' placeholder='날짜를 선택해주세요.' id="workMonth"/>
+  </header>
+  <main>
+    <div id="output"></div>
+  </main>
+
+  <footer>
+    <button onclick="handleFile()">다음</button>
+  </footer>
 
   <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
   <script>
+    // console.log(document.getElementById())
+    document.getElementById('workMonth').value= new Date().toISOString().slice(0, 7);
+
     let workbook;
 
     function updateFileName() {
       const fileInput = document.getElementById('excelFile');
       const selectedFile = document.getElementById('selectedFile');
-      selectedFile.textContent = '선택된 파일: ' + fileInput.files[0].name;
-    }
+      selectedFile.textContent = fileInput.files[0].name;
 
-    function handleFile() {
-      const fileInput = document.getElementById('excelFile');
       const file = fileInput.files[0];
       const reader = new FileReader();
 
@@ -122,7 +250,8 @@
         const data = new Uint8Array(e.target.result);
         workbook = XLSX.read(data, { type: 'array' });
 
-        const sheetMenu = document.getElementById('sheetMenu');
+        const sheetMenu = document.getElementById('sheetButton');
+
         sheetMenu.innerHTML = '';
         workbook.SheetNames.forEach((name, index) => {
           const button = document.createElement('button');
@@ -130,12 +259,18 @@
           button.onclick = () => showSheet(index);
           sheetMenu.appendChild(button);
         });
-        sheetMenu.style.display = 'block';
+        document.getElementById('sheetMenu').style.display = 'flex';
+        // sheetMenu.style.display = 'flex';
 
         showSheet(0);
       };
 
       reader.readAsArrayBuffer(file);
+    }
+
+    function handleFile() {
+      const fileInput = document.getElementById('excelFile');
+
     }
 
     function showSheet(index) {
@@ -145,7 +280,6 @@
       // Find the header row
       const range = XLSX.utils.decode_range(sheet['!ref']);
       let headerRow;
-      let workMonth;
       for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
           const cell_address = { c: C, r: R };
@@ -155,41 +289,34 @@
           if (cell && typeof cell.v === 'string' && cell.v === '사번' && !headerRow) {
             headerRow = R;
           }
-          if (cell && typeof cell.v === 'string' && cell.v.includes('근무월') && !workMonth) {
-            workMonth = cell.v;
-          }
-
-          if (headerRow && workMonth) break;
+          if (headerRow) break;
         }
-        if (headerRow && workMonth) break;
+        if (headerRow) break;
       }
       headerRow = headerRow ? headerRow : 0;
-      document.getElementById('workMonth').textContent = workMonth ? workMonth : '근무월을 찾을 수 없습니다.';
+
 
 
       // Filter columns
-      // const desired_columns = ["사번", "근무자", ...Array.from({length: 31}, (_, i) => (i + 1).toString())];
       const desired_columns = ["사번", "근무자", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
       const column_indexes = [];
+      const column_values = [];
       const headers = XLSX.utils.sheet_to_json(sheet, { header: 1 })[headerRow];
       headers.forEach((h, i) => {
-        console.log(column_indexes.find(i));
-        if (typeof h === 'string' && desired_columns.some(dc => h.includes(dc))) column_indexes.push(i);
-        if (typeof h === 'number' && desired_columns.some(dc => h === dc)) column_indexes.push(i);
-       
-        
+        if (!column_values.includes(h) && typeof h === 'string' && desired_columns.some(dc => h.match(dc))) {
+          column_indexes.push(i);
+          column_values.push(h);
+        }
+        if (!column_values.includes(h) && typeof h === 'number' && desired_columns.some(dc => h === dc)) {
+          column_indexes.push(i);
+          column_values.push(h);
+        }
       });
 
       // Generate HTML table
       let htmlString = "<table>";
       XLSX.utils.sheet_to_json(sheet, { header: 1 }).slice(headerRow).forEach((row, rowIndex) => {
-        const uniqueRow = [...new Set(row)];
         htmlString += "<tr>";
-        // uniqueRow.forEach((cell, i) => {
-        //   if (column_indexes.includes(i)) {
-        //     htmlString += "<td>" + (cell ? cell : '') + "</td>";
-        //   }
-        // });
         row.forEach((cell, i) => {
           if (column_indexes.includes(i)) {
             htmlString += "<td>" + (cell ? cell : '') + "</td>";
@@ -201,6 +328,7 @@
 
       document.getElementById('output').innerHTML = htmlString;
     }
+
   </script>
 </body>
 
