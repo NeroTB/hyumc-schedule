@@ -41,7 +41,7 @@
       /* justify-content: center; */
     }
 
-    
+
 
     main .page {
       display: none;
@@ -59,6 +59,10 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+    }
+
+    main #page0 {
+      justify-content: center;
     }
 
     footer {
@@ -166,7 +170,7 @@
       overflow: auto;
 
     }
-    
+
 
     tr {
       background-color: #474747;
@@ -210,11 +214,30 @@
       color: #19ff00;
     }
 
-    #topContainer {
-      width: 45vw;
-      margin-top: 2vh;
-      display: flex;
-      justify-content: space-around;
+    .topContainer {
+      height: 5vh;
+      width: 90%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin-top: 1vh;
+      white-space: nowrap;
+      /* margin: auto; */
+    }
+
+    .topContainer::-webkit-scrollbar {
+      background-color: #2b2b2b;
+      width: 3px;
+      height: 3px;
+    }
+
+    .topContainer::-webkit-scrollbar-thumb {
+      background-color: #6b6b6b;
+      border-radius: 10px;
+    }
+
+    .topContainer button {
+      font-size: 80%;
+      white-space: nowrap;
     }
 
     input[type='month'] {
@@ -277,13 +300,16 @@ height: 100%; */
 </head>
 
 <body>
-  <header>
-    
-
-
-
-  </header>
+  <header></header>
   <main>
+    <div class="page" id="page0">
+      <div class="topContainer">
+        <button id="code">근무코드</button>
+      </div>
+      <div id="codeMain">
+
+      </div>
+    </div>
     <div class="page" id="page1">
       <!-- <div id="topContainer">
         <input type='month' id="workMonth" />
@@ -303,7 +329,7 @@ height: 100%; */
         </form>
   
       </div> -->
-  
+
       <div id="fileUpload">
         <input type="file" id="excelFile" onchange="updateFileName()"
           accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
@@ -311,7 +337,7 @@ height: 100%; */
         <!-- <button onclick="handleFile()">Upload</button> -->
       </div>
       <div id="settingBtn">
-        <button onclick="openPage(9)">환경설정</button>
+        <button onclick="openPage(0)">환경설정</button>
       </div>
     </div>
     <div class="page" id="page2">
@@ -319,9 +345,7 @@ height: 100%; */
       <div id="sheetMenu"></div>
       <div id="output"></div>
     </div>
-    <div class="page" id="page9">
-      설정화면
-    </div>
+
   </main>
 
   <footer>
@@ -332,17 +356,20 @@ height: 100%; */
     <div class="right">
       <button class="nextPage" onclick="nextPage()">다음</button>
     </div>
-    
-    
+
+
   </footer>
 
   <!-- <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script> -->
   <script src="lib/xlsx.full.min.js"></script>
   <script>
-
     // console.log(document.getElementById())
     // document.getElementById('workMonth').value = new Date().toISOString().slice(0, 7);
-
+    // loadJson();
+    fetch('data/codeInfo.json')
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
     let page = 1;
     showPage();
 
@@ -358,14 +385,14 @@ height: 100%; */
     //   }
     //   showPage()
     // }
-    
+
     // function nextPage() {
     //   page++;
     //   showPage()
     // }
 
     function showPage() {
-      for(let i = 0; i < document.getElementsByClassName("page").length; i++) {
+      for (let i = 0; i < document.getElementsByClassName("page").length; i++) {
         console.log(document.getElementsByClassName("page")[i]);
         document.getElementsByClassName("page")[i].style.display = 'none';
       }
@@ -375,23 +402,35 @@ height: 100%; */
 
     function updateScroll() {
       var container = document.getElementById('sheetMenu');
-      console.log(container.scrollWidth, container.clientWidth);
 
       if (container.scrollWidth > container.clientWidth) {
         container.style.justifyContent = 'flex-start';
       } else {
         container.style.justifyContent = 'center';
       }
+
+      var topContainer = document.getElementsByClassName("topContainer");
+      console.log(topContainer);
+      for (let i = 0; i < topContainer.length; i++) {
+        if (topContainer[i].scrollWidth > topContainer[i].clientWidth) {
+          topContainer[i].style.justifyContent = 'flex-start';
+        } else {
+          topContainer[i].style.justifyContent = 'center';
+        }
+      }
     }
+
 
     let workbook;
 
     function updateFileName() {
       const fileInput = document.getElementById('excelFile');
+
       const selectedFile = document.getElementById('selectedFile');
       selectedFile.textContent = fileInput.files[0].name;
 
       const file = fileInput.files[0];
+      console.log(file);
       const reader = new FileReader();
 
       reader.onload = function (e) {
@@ -467,7 +506,7 @@ height: 100%; */
         }
       });
 
-      if(!keyRow) {
+      if (!keyRow) {
         document.getElementById('output').innerHTML = '<div id="outputErr">올바르지 않은 시트입니다!</div>';
         return;
       }
@@ -480,12 +519,12 @@ height: 100%; */
             row[i] = '';
           }
         }
-        if(isNaN(row[keyRow])) {
+        if (isNaN(row[keyRow])) {
           row[keyRow] = row[keyRow].toString();
         }
 
         var regex = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
-        
+
         if (row[keyRow] == '사번' || regex.test(row[keyRow])) {
           htmlString += "<tr>";
           row.forEach((cell, i) => {
@@ -504,6 +543,68 @@ height: 100%; */
 
       document.getElementById('output').innerHTML = htmlString;
     }
+    function ReadFile(filename) {
+      try {
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var fh = fso.OpenTextFile(filename, 1);
+        var contents = fh.ReadAll();
+        fh.Close();
+        return contents;
+      } catch (Exception) {
+        return "Cannot open file :(";
+      }
+    }
+    function WriteFile(filename, text) {
+      try {
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var fh = fso.OpenTextFile(filename, 8, true);
+        fh.Write(text);
+        fh.Close();
+      } catch (Exception) {
+        alert("Failed to write.");
+      }
+    }
+
+    // function loadJson() {
+    //   const fileInput = document.getElementById('excelFile');
+    //   // const selectedFile = document.getElementById('selectedFile');
+    //   // selectedFile.textContent = fileInput.files[0].name;
+
+    //   const file = fileInput.files[0];
+    //   console.log(file);
+    //   // const file = "data/codeInfo.json";
+    //   const reader = new FileReader();
+
+    //   reader.onload = function (e) {
+    //     // const data = new Uint8Array(e.target.result);
+    //     console.log(e.target.result);
+    //     // workbook = XLSX.read(data, { type: 'array' });
+
+    //     // const sheetMenu = document.getElementById('sheetMenu');
+
+    //     // sheetMenu.innerHTML = '';
+    //     // workbook.SheetNames.forEach((name, index) => {
+    //     //   const button = document.createElement('button');
+    //     //   button.textContent = name;
+    //     //   button.onclick = () => showSheet(index);
+    //     //   sheetMenu.appendChild(button);
+    //     // });
+
+    //     // sheetMenu.style.display = 'flex';
+
+    //     // showSheet(0);
+    //     // updateScroll();
+    //     // openPage(2);
+    //   };
+    //   // reader.readAsText
+    //   // reader.readAsText(file);
+
+    //   reader.readAsArrayBuffer(file);
+    // }
+
+    // function saveJson() {
+
+    // }
 
   </script>
 </body>
