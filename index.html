@@ -31,27 +31,39 @@
       /* align-items: center; */
       position: absolute;
       width: 100vw;
-      height: 70vh;
-      overflow: auto;
-      top: 21vh;
+      /* overflow: auto; */
+
+      height: 100vh;
+      top: 0;
+      /* height: 70vh;
+      top: 21vh; */
       /* display: flex; */
       /* justify-content: center; */
     }
 
-    main::-webkit-scrollbar {
-      background-color: #2b2b2b;
-      width: 5px;
-      height: 5px;
+    
+
+    main .page {
+      display: none;
+      width: 100%;
+      height: 100%;
     }
 
-    main::-webkit-scrollbar-thumb {
-      background-color: #6b6b6b;
-      border-radius: 10px;
+    main #page1 {
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    main #page2 {
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
     }
 
     footer {
       display: flex;
-      flex-direction: row-reverse;
+      justify-content: space-between;
       position: absolute;
       bottom: 0;
       width: 100vw;
@@ -61,9 +73,9 @@
       margin: 10px 5px;
     }
 
-    #fileUpload {
+    /* #fileUpload {
       margin-top: 2vh;
-    }
+    } */
 
     #fileUpload input[type="file"] {
       display: none;
@@ -85,6 +97,26 @@
       white-space: pre-wrap;
       font-size: 14px;
       color: #333;
+      overflow: auto;
+    }
+
+    #output::-webkit-scrollbar {
+      background-color: #2b2b2b;
+      width: 5px;
+      height: 5px;
+    }
+
+    #output::-webkit-scrollbar-thumb {
+      background-color: #6b6b6b;
+      border-radius: 10px;
+    }
+
+    #outputErr {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      font-size: 200%;
+      color: #ff4343;
     }
 
     button {
@@ -131,8 +163,10 @@
     table {
       border-collapse: collapse;
       width: 100%;
+      overflow: auto;
 
     }
+    
 
     tr {
       background-color: #474747;
@@ -197,7 +231,7 @@
       text-align: center;
       font-size: 150%;
       font-weight: bold;
-      
+
       /* margin-bottom: 20px; */
     }
 
@@ -225,7 +259,7 @@ height: 100%; */
     }
 
     select {
-      
+
       border: none;
       width: 20vw;
       height: 100%;
@@ -244,49 +278,100 @@ height: 100%; */
 
 <body>
   <header>
-    <div id="topContainer">
-      <input type='month' id="workMonth" />
+    
 
-      <form action="#">
-        <select name="languages" id="lang">
-          <option value="select">병동 선택</option>
-          <option value="1">1층</option>
-          <option value="2">2층</option>
-          <option value="3">3층</option>
-          <option value="4">4층</option>
-          <option value="5">5층</option>
-          <option value="6">6층</option>
-          <option value="7">7층</option>
-          <option value="8">8층</option>
-        </select>
-      </form>
 
-    </div>
-
-    <div id="fileUpload">
-      <input type="file" id="excelFile" onchange="updateFileName()"
-        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-      <label for="excelFile">파일 선택</label>
-      <!-- <button onclick="handleFile()">Upload</button> -->
-    </div>
-
-    <div id="selectedFile"></div>
-    <div id="sheetMenu"></div>
 
   </header>
   <main>
-    <div id="output"></div>
+    <div class="page" id="page1">
+      <!-- <div id="topContainer">
+        <input type='month' id="workMonth" />
+  
+        <form action="#">
+          <select name="place" id="place">
+            <option value="select">근무 장소</option>
+            <option value="1">1층</option>
+            <option value="2">2층</option>
+            <option value="3">3층</option>
+            <option value="4">4층</option>
+            <option value="5">5층</option>
+            <option value="6">6층</option>
+            <option value="7">7층</option>
+            <option value="8">8층</option>
+          </select>
+        </form>
+  
+      </div> -->
+  
+      <div id="fileUpload">
+        <input type="file" id="excelFile" onchange="updateFileName()"
+          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+        <label for="excelFile">파일 선택</label>
+        <!-- <button onclick="handleFile()">Upload</button> -->
+      </div>
+      <div id="settingBtn">
+        <button onclick="openPage(9)">환경설정</button>
+      </div>
+    </div>
+    <div class="page" id="page2">
+      <div id="selectedFile"></div>
+      <div id="sheetMenu"></div>
+      <div id="output"></div>
+    </div>
+    <div class="page" id="page9">
+      설정화면
+    </div>
   </main>
 
   <footer>
-    <button onclick="handleFile()">다음</button>
+    <div class="left">
+      <button class="previousPage" onclick="previousPage()">이전</button>
+    </div>
+    <div class="middle"></div>
+    <div class="right">
+      <button class="nextPage" onclick="nextPage()">다음</button>
+    </div>
+    
+    
   </footer>
 
-  <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+  <!-- <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script> -->
+  <script src="lib/xlsx.full.min.js"></script>
   <script>
 
     // console.log(document.getElementById())
-    document.getElementById('workMonth').value = new Date().toISOString().slice(0, 7);
+    // document.getElementById('workMonth').value = new Date().toISOString().slice(0, 7);
+
+    let page = 1;
+    showPage();
+
+    function openPage(num) {
+      page = num;
+      showPage();
+    }
+
+    // function previousPage() {
+    //   page--;
+    //   if(page == 1) {
+    //     console.log(document.getElementsByClassName('previousPage'));
+    //   }
+    //   showPage()
+    // }
+    
+    // function nextPage() {
+    //   page++;
+    //   showPage()
+    // }
+
+    function showPage() {
+      for(let i = 0; i < document.getElementsByClassName("page").length; i++) {
+        console.log(document.getElementsByClassName("page")[i]);
+        document.getElementsByClassName("page")[i].style.display = 'none';
+      }
+
+      document.getElementById('page' + page).style.display = 'flex';
+    }
 
     function updateScroll() {
       var container = document.getElementById('sheetMenu');
@@ -327,6 +412,7 @@ height: 100%; */
 
         showSheet(0);
         updateScroll();
+        openPage(2);
       };
 
       reader.readAsArrayBuffer(file);
@@ -366,10 +452,14 @@ height: 100%; */
       const column_indexes = [];
       const column_values = [];
       const headers = XLSX.utils.sheet_to_json(sheet, { header: 1 })[headerRow];
+      let keyRow;
       headers.forEach((h, i) => {
         if (!column_values.includes(h) && typeof h === 'string' && desired_columns.some(dc => h.match(dc))) {
           column_indexes.push(i);
           column_values.push(h);
+          if (h === "사번") {
+            keyRow = i;
+          }
         }
         if (!column_values.includes(h) && typeof h === 'number' && desired_columns.some(dc => h === dc)) {
           column_indexes.push(i);
@@ -377,16 +467,38 @@ height: 100%; */
         }
       });
 
+      if(!keyRow) {
+        document.getElementById('output').innerHTML = '<div id="outputErr">올바르지 않은 시트입니다!</div>';
+        return;
+      }
+
       // Generate HTML table
       let htmlString = "<table>";
       XLSX.utils.sheet_to_json(sheet, { header: 1 }).slice(headerRow).forEach((row, rowIndex) => {
-        htmlString += "<tr>";
-        row.forEach((cell, i) => {
-          if (column_indexes.includes(i)) {
-            htmlString += "<td>" + (cell ? cell : '') + "</td>";
+        for (let i = 0; i < row.length; i++) {
+          if (!row[i]) {
+            row[i] = '';
           }
-        });
-        htmlString += "</tr>";
+        }
+        if(isNaN(row[keyRow])) {
+          row[keyRow] = row[keyRow].toString();
+        }
+
+        var regex = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
+        
+        if (row[keyRow] == '사번' || regex.test(row[keyRow])) {
+          htmlString += "<tr>";
+          row.forEach((cell, i) => {
+
+            if (column_indexes.includes(i)) {
+              htmlString += "<td>" + (cell ? cell : ' ') + "</td>";
+            }
+
+          });
+          htmlString += "</tr>";
+        }
+
+
       });
       htmlString += "</table>";
 
